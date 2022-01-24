@@ -5,6 +5,7 @@ import com.luizaprestes.challenge.model.type.ExpenseType;
 import com.luizaprestes.challenge.util.DateUtil;
 import java.io.Serializable;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +22,7 @@ public final class Expense implements Serializable {
   @Id
   private long id;
 
+  @Enumerated
   private ExpenseType type;
 
   private String description;
