@@ -1,8 +1,10 @@
 package com.luizaprestes.challenge.controller;
 
+import com.luizaprestes.challenge.model.Expense;
 import com.luizaprestes.challenge.model.Income;
 import com.luizaprestes.challenge.repository.IncomeRepository;
 import com.luizaprestes.challenge.util.JacksonAdapter;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -37,10 +39,19 @@ public final class IncomeController {
     return JacksonAdapter.getInstance().serialize(incomeList);
   }
 
-  @GetMapping("?descricao={description}")
+  @GetMapping("/?descricao={description}")
   public String getIncomeByDescription(@PathVariable final String description) {
     final List<Income> incomeList = repository.findAll().stream()
         .filter(income -> income.getDescription().contains(description))
+        .collect(Collectors.toList());
+
+    return JacksonAdapter.getInstance().serialize(incomeList);
+  }
+
+  @GetMapping("/{year}/{month}")
+  public String getExpenseByDate(@PathVariable final long year, @PathVariable final long month) {
+    final List<Income> incomeList = repository.findAll().stream()
+        .filter(expense -> expense.isFromSameDate(year, month))
         .collect(Collectors.toList());
 
     return JacksonAdapter.getInstance().serialize(incomeList);
