@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public final class ExpenseDto implements Serializable {
 
-  private ExpenseType type;
+  private String type;
 
   @NotBlank
   private String description;
@@ -31,7 +31,7 @@ public final class ExpenseDto implements Serializable {
   public Expense toExpense(final long id) {
     return Expense.builder()
         .id(id)
-        .type(type == null ? ExpenseType.OTHERS : type)
+        .type(type == null || type.isEmpty() ? ExpenseType.OTHERS : ExpenseType.getType(type))
         .date(date)
         .description(description)
         .dateValue(DateUtil.parse(date))

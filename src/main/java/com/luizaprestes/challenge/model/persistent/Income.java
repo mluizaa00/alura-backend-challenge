@@ -1,5 +1,7 @@
 package com.luizaprestes.challenge.model.persistent;
 
+import com.luizaprestes.challenge.model.dto.IncomeDto;
+import com.luizaprestes.challenge.util.DateUtil;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -23,5 +25,13 @@ public final class Income implements Serializable {
 
   private String date;
   private long dateValue;
+
+  public IncomeDto toDto() {
+    return IncomeDto.builder()
+        .date(date)
+        .description(description)
+        .value(value)
+        .build();
+  }
 
 }

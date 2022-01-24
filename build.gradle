@@ -19,19 +19,21 @@ dependencies {
     def lombok = "org.projectlombok:lombok:1.18.22"
     def springBoot = "org.springframework.boot:spring-boot"
 
-    implementation "${springBoot}-starter-web:2.6.2"
-    implementation "${springBoot}-starter-thymeleaf:2.6.2"
-    implementation "${springBoot}-starter-data-jpa"
-    implementation "${springBoot}-starter-validation"
+    def springVersion = "2.6.2"
 
-    developmentOnly "${springBoot}-devtools:2.6.2"
+    implementation "${springBoot}-starter-web:${springVersion}"
+    implementation "${springBoot}-starter-thymeleaf:${springVersion}"
+    implementation "${springBoot}-starter-data-jpa:${springVersion}"
+    implementation "${springBoot}-starter-validation:${springVersion}"
+
+    developmentOnly "${springBoot}-devtools:${springVersion}"
 
     runtimeOnly "mysql:mysql-connector-java:8.0.25"
 
     compileOnly lombok
     annotationProcessor lombok
 
-    testImplementation "${springBoot}-starter-test:2.6.2"
+    testImplementation "${springBoot}-starter-test:${springVersion}"
 }
 
 tasks.named('test') {
