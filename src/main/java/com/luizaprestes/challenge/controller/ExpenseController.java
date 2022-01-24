@@ -1,6 +1,6 @@
 package com.luizaprestes.challenge.controller;
 
-import com.luizaprestes.challenge.model.dto.ExpenseDTO;
+import com.luizaprestes.challenge.model.dto.ExpenseDto;
 import com.luizaprestes.challenge.model.persistent.Expense;
 import com.luizaprestes.challenge.repository.ExpenseRepository;
 import com.luizaprestes.challenge.util.DateUtil;
@@ -39,10 +39,7 @@ public final class ExpenseController {
 
   @GetMapping("/?descricao={description}")
   public String getExpenseByDescription(@PathVariable final String description) {
-    final List<Expense> expenseList = repository.findAll().stream()
-        .filter(expense -> expense.getDescription().contains(description))
-        .collect(Collectors.toList());
-
+    final List<Expense> expenseList = repository.findExpensesByDescriptionContaining(description);
     return JacksonAdapter.getInstance().serialize(expenseList);
   }
 
@@ -56,7 +53,7 @@ public final class ExpenseController {
   }
 
   @PostMapping
-  public String saveExpense(@Valid final ExpenseDTO expenseDTO, final BindingResult result) {
+  public String saveExpense(@Valid final ExpenseDto expenseDTO, final BindingResult result) {
     if (result.hasErrors()) {
       return DEFAULT;
     }
@@ -80,7 +77,7 @@ public final class ExpenseController {
   }
 
   @PutMapping("/{expense_id}")
-  public String saveExpense(@PathVariable final long expense_id, @Valid final ExpenseDTO expenseDTO, final BindingResult result) {
+  public String saveExpense(@PathVariable final long expense_id, @Valid final ExpenseDto expenseDTO, final BindingResult result) {
     if (result.hasErrors()) {
       return DEFAULT;
     }

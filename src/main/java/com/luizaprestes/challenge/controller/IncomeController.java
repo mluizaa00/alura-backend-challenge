@@ -1,22 +1,27 @@
 package com.luizaprestes.challenge.controller;
 
-import com.luizaprestes.challenge.model.dto.IncomeDTO;
+import com.luizaprestes.challenge.model.Response;
+import com.luizaprestes.challenge.model.dto.IncomeDto;
 import com.luizaprestes.challenge.model.persistent.Income;
 import com.luizaprestes.challenge.repository.IncomeRepository;
 import com.luizaprestes.challenge.util.DateUtil;
 import com.luizaprestes.challenge.util.JacksonAdapter;
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/receitas")
@@ -39,10 +44,7 @@ public final class IncomeController {
 
   @GetMapping("/?descricao={description}")
   public String getIncomeByDescription(@PathVariable final String description) {
-    final List<Income> incomeList = repository.findAll().stream()
-        .filter(income -> income.getDescription().contains(description))
-        .collect(Collectors.toList());
-
+    final List<Income> incomeList = repository.findIncomesByDescriptionContaining(description);
     return JacksonAdapter.getInstance().serialize(incomeList);
   }
 
@@ -56,15 +58,25 @@ public final class IncomeController {
   }
 
   @PostMapping
-  public String saveIncome(@Valid final IncomeDTO incomeDTO, final BindingResult result) {
+  public ResponseEntity<String> saveIncome(@Valid @RequestBody final IncomeDto incomeDTO, final BindingResult result) {
+    final Response<IncomeDto> response = new Response<>();
     if (result.hasErrors()) {
-      return DEFAULT;
+      result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+      return ResponseEntity
+          .badRequest()
+          .body(JacksonAdapter.getInstance().serialize(response));
     }
 
     final var income = incomeDTO.toIncome(repository.count() + 1);
     repository.save(income);
 
-    return DEFAULT;
+    final URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+        .path("/{id}")
+        .buildAndExpand(income.getId())
+        .toUri();
+
+    return ResponseEntity.created(location)
+        .body(JacksonAdapter.getInstance().serialize(income));
   }
 
   @GetMapping("/{income_id}")
@@ -80,7 +92,7 @@ public final class IncomeController {
   }
 
   @PutMapping("/{income_id}")
-  public String saveIncome(@PathVariable final long income_id, @Valid final IncomeDTO incomeDTO, final BindingResult result) {
+  public String saveIncome(@PathVariable final long income_id, @Valid final IncomeDto incomeDTO, final BindingResult result) {
     if (result.hasErrors()) {
       return DEFAULT;
     }

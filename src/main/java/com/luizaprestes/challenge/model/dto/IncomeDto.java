@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public final class IncomeDTO implements Serializable {
+public final class IncomeDto implements Serializable {
 
   @NotBlank
   private String description;

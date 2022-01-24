@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public final class ExpenseDTO implements Serializable {
+public final class ExpenseDto implements Serializable {
 
   private ExpenseType type;
 
