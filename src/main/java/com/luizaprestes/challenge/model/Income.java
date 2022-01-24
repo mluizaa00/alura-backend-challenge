@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public final class Income implements Serializable {
 
   @Id
-  private UUID id;
+  private long id;
 
   @NotBlank
   private String description;
