@@ -19,14 +19,22 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'mysql:mysql-connector-java'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    def lombok = "org.projectlombok:lombok:1.18.22"
+    def springBoot = "org.springframework.boot:spring-boot"
+
+    implementation "${springBoot}-starter-web:2.6.2"
+    implementation "${springBoot}-starter-thymeleaf:2.6.2"
+    implementation "${springBoot}-starter-data-jpa"
+    implementation "${springBoot}-starter-validation"
+
+    developmentOnly "${springBoot}-devtools:2.6.2"
+
+    runtimeOnly "mysql:mysql-connector-java:8.0.25"
+
+    compileOnly lombok
+    annotationProcessor lombok
+
+    testImplementation "${springBoot}-starter-test:2.6.2"
 }
 
 tasks.named('test') {

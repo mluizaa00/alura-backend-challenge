@@ -1,4 +1,4 @@
-package com.luizaprestes.alurabackendchallenge1;
+package com.luizaprestes.challenge;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
