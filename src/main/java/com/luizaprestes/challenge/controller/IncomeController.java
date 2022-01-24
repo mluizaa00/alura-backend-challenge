@@ -5,6 +5,7 @@ import com.luizaprestes.challenge.repository.IncomeRepository;
 import com.luizaprestes.challenge.util.JacksonAdapter;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,6 +34,15 @@ public final class IncomeController {
   @GetMapping
   public String getIncome() {
     final List<Income> incomeList = repository.findAll();
+    return JacksonAdapter.getInstance().serialize(incomeList);
+  }
+
+  @GetMapping("?descricao={description}")
+  public String getIncomeByDescription(@PathVariable final String description) {
+    final List<Income> incomeList = repository.findAll().stream()
+        .filter(income -> income.getDescription().contains(description))
+        .collect(Collectors.toList());
+
     return JacksonAdapter.getInstance().serialize(incomeList);
   }
 
@@ -74,7 +84,7 @@ public final class IncomeController {
   }
 
   @DeleteMapping("/{income_id}")
-  public String saveIncome(@PathVariable final long income_id) {
+  public String deleteIncome(@PathVariable final long income_id) {
     repository.deleteById(income_id);
     return DEFAULT;
   }

@@ -1,5 +1,6 @@
 package com.luizaprestes.challenge.model;
 
+import com.luizaprestes.challenge.model.type.ExpenseType;
 import java.io.Serializable;
 import java.util.UUID;
 import javax.persistence.Entity;
@@ -20,6 +21,8 @@ public final class Expense implements Serializable {
 
   @Id
   private long id;
+
+  private ExpenseType type;
 
   @NotBlank
   private String description;

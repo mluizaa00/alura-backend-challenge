@@ -1,9 +1,12 @@
 package com.luizaprestes.challenge.controller;
 
 import com.luizaprestes.challenge.model.Expense;
+import com.luizaprestes.challenge.model.Income;
+import com.luizaprestes.challenge.model.type.ExpenseType;
 import com.luizaprestes.challenge.repository.ExpenseRepository;
 import com.luizaprestes.challenge.util.JacksonAdapter;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -34,6 +37,15 @@ public final class ExpenseController {
     return JacksonAdapter.getInstance().serialize(incomeList);
   }
 
+  @GetMapping("?descricao={description}")
+  public String getExpenseByDescription(@PathVariable final String description) {
+    final List<Expense> expenseList = repository.findAll().stream()
+        .filter(expense -> expense.getDescription().contains(description))
+        .collect(Collectors.toList());
+
+    return JacksonAdapter.getInstance().serialize(expenseList);
+  }
+
   @PostMapping
   public String saveExpense(@Valid final Expense expense, final BindingResult result) {
     if (result.hasErrors()) {
@@ -42,6 +54,9 @@ public final class ExpenseController {
 
     expense.setId(repository.count() + 1);
     expense.setDateValue(System.currentTimeMillis());
+    if (expense.getType() == null) {
+      expense.setType(ExpenseType.OTHERS);
+    }
 
     repository.save(expense);
     return DEFAULT;
@@ -72,7 +87,7 @@ public final class ExpenseController {
   }
 
   @DeleteMapping("/{expense_id}")
-  public String saveExpense(@PathVariable final long expense_id) {
+  public String deleteExpense(@PathVariable final long expense_id) {
     repository.deleteById(expense_id);
     return DEFAULT;
   }
