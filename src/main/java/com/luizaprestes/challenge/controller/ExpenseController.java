@@ -1,13 +1,11 @@
 package com.luizaprestes.challenge.controller;
 
-import com.luizaprestes.challenge.model.Income;
-import com.luizaprestes.challenge.repository.IncomeRepository;
+import com.luizaprestes.challenge.model.Expense;
+import com.luizaprestes.challenge.repository.ExpenseRepository;
 import com.luizaprestes.challenge.util.JacksonAdapter;
 import java.util.List;
-import java.util.UUID;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,64 +16,64 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/receitas")
-public final class IncomeController {
+@RequestMapping("/despesas")
+public final class ExpenseController {
 
   private static final String DEFAULT;
 
   static {
-    DEFAULT = "/receitas";
+    DEFAULT = "/despesas";
   }
 
   @Autowired
-  private IncomeRepository repository;
+  private ExpenseRepository repository;
 
   @GetMapping
-  public String getIncome() {
-    final List<Income> incomeList = repository.findAll();
+  public String getExpenses() {
+    final List<Expense> incomeList = repository.findAll();
     return JacksonAdapter.getInstance().serialize(incomeList);
   }
 
   @PostMapping
-  public String saveIncome(@Valid final Income income, final BindingResult result) {
+  public String saveExpense(@Valid final Expense expense, final BindingResult result) {
     if (result.hasErrors()) {
       return DEFAULT;
     }
 
-    income.setId(repository.count() + 1);
-    income.setDateValue(System.currentTimeMillis());
+    expense.setId(repository.count() + 1);
+    expense.setDateValue(System.currentTimeMillis());
 
-    repository.save(income);
+    repository.save(expense);
     return DEFAULT;
   }
 
-  @GetMapping("/{income_id}")
-  public String getIncome(@PathVariable final long income_id) {
-    final Income income = repository.findById(income_id)
+  @GetMapping("/{expense_id}")
+  public String getIncome(@PathVariable final long expense_id) {
+    final Expense income = repository.findById(expense_id)
         .orElse(null);
     
     if (income == null) {
       return DEFAULT;
     }
     
-    return JacksonAdapter.getInstance().serialize(income_id);
+    return JacksonAdapter.getInstance().serialize(expense_id);
   }
 
-  @PutMapping("/{income_id}")
-  public String saveIncome(@PathVariable final long income_id, @Valid final Income income, final BindingResult result) {
+  @PutMapping("/{expense_id}")
+  public String saveExpense(@PathVariable final long expense_id, @Valid final Expense expense, final BindingResult result) {
     if (result.hasErrors()) {
       return DEFAULT;
     }
 
-    income.setId(income_id);
-    repository.save(income);
+    expense.setId(expense_id);
+    repository.save(expense);
 
     return DEFAULT;
   }
 
-  @DeleteMapping("/{income_id}")
-  public String saveIncome(@PathVariable final long income_id) {
-    repository.deleteById(income_id);
+  @DeleteMapping("/{expense_id}")
+  public String saveExpense(@PathVariable final long expense_id) {
+    repository.deleteById(expense_id);
     return DEFAULT;
   }
 
