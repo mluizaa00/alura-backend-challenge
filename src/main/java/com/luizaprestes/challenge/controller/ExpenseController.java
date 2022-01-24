@@ -3,6 +3,7 @@ package com.luizaprestes.challenge.controller;
 import com.luizaprestes.challenge.model.dto.ExpenseDTO;
 import com.luizaprestes.challenge.model.persistent.Expense;
 import com.luizaprestes.challenge.repository.ExpenseRepository;
+import com.luizaprestes.challenge.util.DateUtil;
 import com.luizaprestes.challenge.util.JacksonAdapter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,7 +49,7 @@ public final class ExpenseController {
   @GetMapping("/{year}/{month}")
   public String getExpenseByDate(@PathVariable final long year, @PathVariable final long month) {
     final List<Expense> expenseList = repository.findAll().stream()
-        .filter(expense -> expense.isFromSameDate(year, month))
+        .filter(expense -> DateUtil.isFromSameDate(expense.getDateValue(), year, month))
         .collect(Collectors.toList());
 
     return JacksonAdapter.getInstance().serialize(expenseList);

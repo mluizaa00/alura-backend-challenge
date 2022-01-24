@@ -6,10 +6,10 @@ import com.luizaprestes.challenge.model.MonthlyResume;
 import com.luizaprestes.challenge.model.type.ExpenseType;
 import com.luizaprestes.challenge.repository.ExpenseRepository;
 import com.luizaprestes.challenge.repository.IncomeRepository;
+import com.luizaprestes.challenge.util.DateUtil;
 import com.luizaprestes.challenge.util.JacksonAdapter;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,11 +30,11 @@ public final class ResumeController {
   @GetMapping("/{year}/{month}")
   public String getMonthlyResumeByDate(@PathVariable final long year, @PathVariable final long month) {
     final List<Expense> expenseList = expenseRepository.findAll().stream()
-        .filter(expense -> expense.isFromSameDate(year, month))
+        .filter(expense -> DateUtil.isFromSameDate(expense.getDateValue(), year, month))
         .collect(Collectors.toList());
 
     final List<Income> incomeList = incomeRepository.findAll().stream()
-        .filter(expense -> expense.isFromSameDate(year, month))
+        .filter(income -> DateUtil.isFromSameDate(income.getDateValue(), year, month))
         .collect(Collectors.toList());
 
     long totalIncome = 0;
@@ -42,7 +42,7 @@ public final class ResumeController {
       totalIncome += income.getValue();
     }
 
-    final Map<ExpenseType, Long> expenseTypeMap = new HashMap<>();
+    final EnumMap<ExpenseType, Long> expenseTypeMap = new EnumMap<>(ExpenseType.class);
 
     long totalExpenses = 0;
     for (final Expense expense : expenseList) {

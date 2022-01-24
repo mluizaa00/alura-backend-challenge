@@ -1,13 +1,8 @@
 package com.luizaprestes.challenge.model.dto;
 
 import com.luizaprestes.challenge.model.persistent.Expense;
-import com.luizaprestes.challenge.model.persistent.Income;
 import com.luizaprestes.challenge.model.type.ExpenseType;
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Date;
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

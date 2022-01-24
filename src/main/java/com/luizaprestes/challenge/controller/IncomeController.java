@@ -3,6 +3,7 @@ package com.luizaprestes.challenge.controller;
 import com.luizaprestes.challenge.model.dto.IncomeDTO;
 import com.luizaprestes.challenge.model.persistent.Income;
 import com.luizaprestes.challenge.repository.IncomeRepository;
+import com.luizaprestes.challenge.util.DateUtil;
 import com.luizaprestes.challenge.util.JacksonAdapter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,9 +47,9 @@ public final class IncomeController {
   }
 
   @GetMapping("/{year}/{month}")
-  public String getExpenseByDate(@PathVariable final long year, @PathVariable final long month) {
+  public String getIncomeByDate(@PathVariable final long year, @PathVariable final long month) {
     final List<Income> incomeList = repository.findAll().stream()
-        .filter(expense -> expense.isFromSameDate(year, month))
+        .filter(income -> DateUtil.isFromSameDate(income.getDateValue(), year, month))
         .collect(Collectors.toList());
 
     return JacksonAdapter.getInstance().serialize(incomeList);
