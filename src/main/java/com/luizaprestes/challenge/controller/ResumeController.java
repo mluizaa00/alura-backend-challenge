@@ -1,25 +1,19 @@
 package com.luizaprestes.challenge.controller;
 
-import com.luizaprestes.challenge.model.Expense;
-import com.luizaprestes.challenge.model.Income;
+import com.luizaprestes.challenge.model.persistent.Expense;
+import com.luizaprestes.challenge.model.persistent.Income;
 import com.luizaprestes.challenge.model.MonthlyResume;
 import com.luizaprestes.challenge.model.type.ExpenseType;
 import com.luizaprestes.challenge.repository.ExpenseRepository;
 import com.luizaprestes.challenge.repository.IncomeRepository;
 import com.luizaprestes.challenge.util.JacksonAdapter;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

@@ -1,16 +1,13 @@
 package com.luizaprestes.challenge.controller;
 
-import com.luizaprestes.challenge.model.Expense;
-import com.luizaprestes.challenge.model.Income;
+import com.luizaprestes.challenge.model.dto.IncomeDTO;
+import com.luizaprestes.challenge.model.persistent.Income;
 import com.luizaprestes.challenge.repository.IncomeRepository;
 import com.luizaprestes.challenge.util.JacksonAdapter;
-import java.util.Calendar;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,15 +55,14 @@ public final class IncomeController {
   }
 
   @PostMapping
-  public String saveIncome(@Valid final Income income, final BindingResult result) {
+  public String saveIncome(@Valid final IncomeDTO incomeDTO, final BindingResult result) {
     if (result.hasErrors()) {
       return DEFAULT;
     }
 
-    income.setId(repository.count() + 1);
-    income.setDateValue(System.currentTimeMillis());
-
+    final Income income = incomeDTO.toIncome(repository.count() + 1);
     repository.save(income);
+
     return DEFAULT;
   }
 
@@ -83,12 +79,12 @@ public final class IncomeController {
   }
 
   @PutMapping("/{income_id}")
-  public String saveIncome(@PathVariable final long income_id, @Valid final Income income, final BindingResult result) {
+  public String saveIncome(@PathVariable final long income_id, @Valid final IncomeDTO incomeDTO, final BindingResult result) {
     if (result.hasErrors()) {
       return DEFAULT;
     }
 
-    income.setId(income_id);
+    final Income income = incomeDTO.toIncome(income_id);
     repository.save(income);
 
     return DEFAULT;

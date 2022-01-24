@@ -1,12 +1,9 @@
 package com.luizaprestes.challenge.controller;
 
-import com.luizaprestes.challenge.model.Expense;
-import com.luizaprestes.challenge.model.Income;
-import com.luizaprestes.challenge.model.type.ExpenseType;
+import com.luizaprestes.challenge.model.dto.ExpenseDTO;
+import com.luizaprestes.challenge.model.persistent.Expense;
 import com.luizaprestes.challenge.repository.ExpenseRepository;
 import com.luizaprestes.challenge.util.JacksonAdapter;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -58,18 +55,14 @@ public final class ExpenseController {
   }
 
   @PostMapping
-  public String saveExpense(@Valid final Expense expense, final BindingResult result) {
+  public String saveExpense(@Valid final ExpenseDTO expenseDTO, final BindingResult result) {
     if (result.hasErrors()) {
       return DEFAULT;
     }
 
-    expense.setId(repository.count() + 1);
-    expense.setDateValue(System.currentTimeMillis());
-    if (expense.getType() == null) {
-      expense.setType(ExpenseType.OTHERS);
-    }
+    final Expense income = expenseDTO.toExpense(repository.count() + 1);
+    repository.save(income);
 
-    repository.save(expense);
     return DEFAULT;
   }
 
@@ -86,12 +79,12 @@ public final class ExpenseController {
   }
 
   @PutMapping("/{expense_id}")
-  public String saveExpense(@PathVariable final long expense_id, @Valid final Expense expense, final BindingResult result) {
+  public String saveExpense(@PathVariable final long expense_id, @Valid final ExpenseDTO expenseDTO, final BindingResult result) {
     if (result.hasErrors()) {
       return DEFAULT;
     }
 
-    expense.setId(expense_id);
+    final Expense expense = expenseDTO.toExpense(expense_id);
     repository.save(expense);
 
     return DEFAULT;

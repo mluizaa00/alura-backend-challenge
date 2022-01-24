@@ -1,5 +1,6 @@
-package com.luizaprestes.challenge.model;
+package com.luizaprestes.challenge.model.persistent;
 
+import com.luizaprestes.challenge.model.type.ExpenseType;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,24 +16,23 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@Entity(name = "challenge_income")
+@Entity(name = "challenge_expense")
 @NoArgsConstructor
 @AllArgsConstructor
-public final class Income implements Serializable {
+public final class Expense implements Serializable {
 
   @Id
   private long id;
 
-  @NotBlank
+  private ExpenseType type;
+
   private String description;
-  @Min(1)
   private long value;
 
-  @NotBlank
   private String date;
   private long dateValue;
 
-  public Calendar getCalendar() {
+  private Calendar getCalendar() {
     final Calendar calendar = Calendar.getInstance();
     calendar.setTime(new Date(dateValue));
 
