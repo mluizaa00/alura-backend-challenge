@@ -61,7 +61,7 @@ public final class IncomeController {
       return DEFAULT;
     }
 
-    final Income income = incomeDTO.toIncome(repository.count() + 1);
+    final var income = incomeDTO.toIncome(repository.count() + 1);
     repository.save(income);
 
     return DEFAULT;
@@ -69,7 +69,7 @@ public final class IncomeController {
 
   @GetMapping("/{income_id}")
   public String getIncome(@PathVariable final long income_id) {
-    final Income income = repository.findById(income_id)
+    final var income = repository.findById(income_id)
         .orElse(null);
     
     if (income == null) {
@@ -85,7 +85,7 @@ public final class IncomeController {
       return DEFAULT;
     }
 
-    final Income income = incomeDTO.toIncome(income_id);
+    final var income = incomeDTO.toIncome(income_id);
     repository.save(income);
 
     return DEFAULT;

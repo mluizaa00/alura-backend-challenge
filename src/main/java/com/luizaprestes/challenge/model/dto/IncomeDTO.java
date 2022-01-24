@@ -1,6 +1,7 @@
 package com.luizaprestes.challenge.model.dto;
 
 import com.luizaprestes.challenge.model.persistent.Income;
+import com.luizaprestes.challenge.util.DateUtil;
 import java.io.Serializable;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -29,7 +30,7 @@ public final class IncomeDTO implements Serializable {
         .id(id)
         .date(date)
         .description(description)
-        .dateValue(System.currentTimeMillis())
+        .dateValue(DateUtil.parse(date))
         .value(value)
         .build();
   }

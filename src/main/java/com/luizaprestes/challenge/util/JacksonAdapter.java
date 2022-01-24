@@ -1,8 +1,6 @@
 package com.luizaprestes.challenge.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.luizaprestes.challenge.exception.JsonException;
 
 public final class JacksonAdapter {
@@ -34,15 +32,6 @@ public final class JacksonAdapter {
     } catch (Exception exception) {
       throw new JsonException(exception);
     }
-  }
-
-  public JsonNode get(final ObjectNode node, final String key) {
-    final JsonNode jsonNode = node.get(key);
-    if (jsonNode == null) {
-      throw new NullPointerException("The key specified cannot be null");
-    }
-
-    return jsonNode;
   }
 
   public static JacksonAdapter getInstance() {

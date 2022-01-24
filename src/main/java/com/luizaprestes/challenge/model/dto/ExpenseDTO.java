@@ -2,6 +2,7 @@ package com.luizaprestes.challenge.model.dto;
 
 import com.luizaprestes.challenge.model.persistent.Expense;
 import com.luizaprestes.challenge.model.type.ExpenseType;
+import com.luizaprestes.challenge.util.DateUtil;
 import java.io.Serializable;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -33,7 +34,7 @@ public final class ExpenseDTO implements Serializable {
         .type(type == null ? ExpenseType.OTHERS : type)
         .date(date)
         .description(description)
-        .dateValue(System.currentTimeMillis())
+        .dateValue(DateUtil.parse(date))
         .value(value)
         .build();
   }

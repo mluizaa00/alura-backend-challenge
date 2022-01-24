@@ -4,16 +4,19 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DateUtil {
 
+  private static final DateTimeFormatter FORMATTER;
   private static final ZoneId ZONE_ID;
 
   static {
     ZONE_ID = ZoneId.of("America/Sao_Paulo");
+    FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
   }
 
   private static LocalDate getDate(final long dateValue) {
@@ -30,7 +33,7 @@ public final class DateUtil {
   }
 
   public static long parse(final String date) {
-    return LocalDateTime.parse(date)
+    return LocalDateTime.parse(date, FORMATTER)
         .atZone(ZONE_ID)
         .toInstant()
         .toEpochMilli();

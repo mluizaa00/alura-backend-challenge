@@ -61,7 +61,7 @@ public final class ExpenseController {
       return DEFAULT;
     }
 
-    final Expense income = expenseDTO.toExpense(repository.count() + 1);
+    final var income = expenseDTO.toExpense(repository.count() + 1);
     repository.save(income);
 
     return DEFAULT;
@@ -69,7 +69,7 @@ public final class ExpenseController {
 
   @GetMapping("/{expense_id}")
   public String getIncome(@PathVariable final long expense_id) {
-    final Expense income = repository.findById(expense_id)
+    final var income = repository.findById(expense_id)
         .orElse(null);
     
     if (income == null) {
@@ -85,7 +85,7 @@ public final class ExpenseController {
       return DEFAULT;
     }
 
-    final Expense expense = expenseDTO.toExpense(expense_id);
+    final var expense = expenseDTO.toExpense(expense_id);
     repository.save(expense);
 
     return DEFAULT;
