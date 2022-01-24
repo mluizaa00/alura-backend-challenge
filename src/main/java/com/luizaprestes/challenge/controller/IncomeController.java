@@ -1,16 +1,15 @@
 package com.luizaprestes.challenge.controller;
 
-import com.luizaprestes.challenge.model.Response;
 import com.luizaprestes.challenge.model.dto.IncomeDto;
 import com.luizaprestes.challenge.model.persistent.Income;
 import com.luizaprestes.challenge.repository.IncomeRepository;
 import com.luizaprestes.challenge.util.DateUtil;
-import com.luizaprestes.challenge.util.JacksonAdapter;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,44 +26,39 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RequestMapping("/receitas")
 public final class IncomeController {
 
-  private static final String DEFAULT;
-
-  static {
-    DEFAULT = "/receitas";
-  }
-
   @Autowired
   private IncomeRepository repository;
 
   @GetMapping
-  public String getIncome() {
+  public ResponseEntity<List<Income>> getIncomes() {
     final List<Income> incomeList = repository.findAll();
-    return JacksonAdapter.getInstance().serialize(incomeList);
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(incomeList);
   }
 
   @GetMapping("/?descricao={description}")
-  public String getIncomeByDescription(@PathVariable final String description) {
+  public ResponseEntity<List<Income>> getIncomeByDescription(@PathVariable final String description) {
     final List<Income> incomeList = repository.findIncomesByDescriptionContaining(description);
-    return JacksonAdapter.getInstance().serialize(incomeList);
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(incomeList);
   }
 
   @GetMapping("/{year}/{month}")
-  public String getIncomeByDate(@PathVariable final long year, @PathVariable final long month) {
+  public ResponseEntity<List<Income>> getIncomeByDate(@PathVariable final long year, @PathVariable final long month) {
     final List<Income> incomeList = repository.findAll().stream()
         .filter(income -> DateUtil.isFromSameDate(income.getDateValue(), year, month))
         .collect(Collectors.toList());
 
-    return JacksonAdapter.getInstance().serialize(incomeList);
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(incomeList);
   }
 
   @PostMapping
-  public ResponseEntity<String> saveIncome(@Valid @RequestBody final IncomeDto incomeDTO, final BindingResult result) {
-    final Response<IncomeDto> response = new Response<>();
+  public ResponseEntity<Income> saveIncome(@Valid @RequestBody final IncomeDto incomeDTO, final BindingResult result) {
     if (result.hasErrors()) {
-      result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
       return ResponseEntity
           .badRequest()
-          .body(JacksonAdapter.getInstance().serialize(response));
+          .build();
     }
 
     final var income = incomeDTO.toIncome(repository.count() + 1);
@@ -76,37 +70,44 @@ public final class IncomeController {
         .toUri();
 
     return ResponseEntity.created(location)
-        .body(JacksonAdapter.getInstance().serialize(income));
+        .body(income);
   }
 
   @GetMapping("/{income_id}")
-  public String getIncome(@PathVariable final long income_id) {
+  public ResponseEntity<Income> getIncome(@PathVariable final long income_id) {
     final var income = repository.findById(income_id)
         .orElse(null);
-    
+
     if (income == null) {
-      return DEFAULT;
+      return ResponseEntity
+          .badRequest()
+          .build();
     }
-    
-    return JacksonAdapter.getInstance().serialize(income_id);
+
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(income);
   }
 
   @PutMapping("/{income_id}")
-  public String saveIncome(@PathVariable final long income_id, @Valid final IncomeDto incomeDTO, final BindingResult result) {
+  public ResponseEntity<Income> saveIncome(@PathVariable final long income_id, @Valid final IncomeDto incomeDTO, final BindingResult result) {
     if (result.hasErrors()) {
-      return DEFAULT;
+      return ResponseEntity
+          .badRequest()
+          .build();
     }
 
     final var income = incomeDTO.toIncome(income_id);
     repository.save(income);
 
-    return DEFAULT;
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(income);
   }
 
   @DeleteMapping("/{income_id}")
-  public String deleteIncome(@PathVariable final long income_id) {
+  public ResponseEntity<String> deleteIncome(@PathVariable final long income_id) {
     repository.deleteById(income_id);
-    return DEFAULT;
+    return ResponseEntity.status(HttpStatus.OK)
+        .body("Successful operation");
   }
 
 }
