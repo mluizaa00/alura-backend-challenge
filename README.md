@@ -1,6 +1,6 @@
 ## alura-backend-challenge
 
-Alura Backend Challenge, implemented using **SpringBoot MVC, JPA and Thymeleaf**.
+Alura Backend Challenge, implemented using **SpringBoot MVC and JPA**.
 
 - Testing: **Postman** to create HTTP requests.
 - Checkstyle: **SonarQube** in a localhost.
