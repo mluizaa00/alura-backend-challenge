@@ -4,7 +4,6 @@ import com.luizaprestes.challenge.model.dto.IncomeDto;
 import com.luizaprestes.challenge.model.persistent.Income;
 import com.luizaprestes.challenge.repository.IncomeRepository;
 import com.luizaprestes.challenge.util.DateUtil;
-import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
