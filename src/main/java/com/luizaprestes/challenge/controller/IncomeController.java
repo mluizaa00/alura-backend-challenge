@@ -74,9 +74,9 @@ public final class IncomeController {
         .body(income);
   }
 
-  @RequestMapping(value = "/v1/receitas/{income_id}", method = RequestMethod.GET, produces = "application/json")
-  public ResponseEntity<IncomeDto> get(@PathVariable final long income_id) {
-    final var income = repository.findById(income_id)
+  @RequestMapping(value = "/v1/receitas/{id}", method = RequestMethod.GET, produces = "application/json")
+  public ResponseEntity<IncomeDto> get(@PathVariable final long id) {
+    final var income = repository.findById(id)
         .orElse(null);
 
     if (income == null) {
@@ -89,15 +89,15 @@ public final class IncomeController {
         .body(income.toDto());
   }
 
-  @RequestMapping(value = "/v1/receitas/{income_id}", method = RequestMethod.PUT, produces = "application/json")
-  public ResponseEntity<Income> save(@PathVariable final long income_id, @Valid final IncomeDto incomeDTO, final BindingResult result) {
+  @RequestMapping(value = "/v1/receitas/{id}", method = RequestMethod.PUT, produces = "application/json")
+  public ResponseEntity<Income> save(@PathVariable final long id, @Valid final IncomeDto incomeDTO, final BindingResult result) {
     if (result.hasErrors()) {
       return ResponseEntity
           .badRequest()
           .build();
     }
 
-    final var income = incomeDTO.toIncome(income_id);
+    final var income = incomeDTO.toIncome(id);
     repository.save(income);
 
     return ResponseEntity.status(HttpStatus.OK)
@@ -105,9 +105,9 @@ public final class IncomeController {
   }
 
   @ResponseStatus(value = HttpStatus.NO_CONTENT)
-  @RequestMapping(value = "/v1/receitas/{income_id}", method = RequestMethod.DELETE, produces = "application/json")
-  public void delete(@PathVariable final long income_id) {
-    repository.deleteById(income_id);
+  @RequestMapping(value = "/v1/receitas/{id}", method = RequestMethod.DELETE, produces = "application/json")
+  public void delete(@PathVariable final long id) {
+    repository.deleteById(id);
   }
 
 }

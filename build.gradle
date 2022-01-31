@@ -25,6 +25,10 @@ dependencies {
     implementation "${springBoot}-starter-thymeleaf:${springVersion}"
     implementation "${springBoot}-starter-data-jpa:${springVersion}"
     implementation "${springBoot}-starter-validation:${springVersion}"
+    implementation "${springBoot}-starter-security:${springVersion}"
+
+    // JWT Dependency
+    implementation "io.jsonwebtoken:jjwt:0.9.1"
 
     developmentOnly "${springBoot}-devtools:${springVersion}"
 
