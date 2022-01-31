@@ -1,39 +1,68 @@
 package com.luizaprestes.challenge.adapter;
 
+import com.luizaprestes.challenge.config.JwtAuthenticationFilter;
+import com.luizaprestes.challenge.config.JwtEntryPoint;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityAdapter extends WebSecurityConfigurerAdapter {
+
+  @Autowired
+  private JwtEntryPoint entryPoint;
+
+  @Autowired
+  private UserDetailsService userService;
+
+  @Autowired
+  private JwtAuthenticationFilter filter;
 
   @Override
   @SneakyThrows
   protected void configure(final HttpSecurity security) {
     security
+        .csrf().disable()
         .authorizeRequests()
-          .antMatchers("/").permitAll()
-          .anyRequest().authenticated()
-          .and()
+          .antMatchers("/", "/authenticate", "/home").permitAll()
+        .anyRequest()
+        .authenticated()
+        .and()
+            .exceptionHandling()
+            .authenticationEntryPoint(entryPoint)
+        .and()
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .and()
         .logout()
           .permitAll();
+
+    security.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
   }
 
-  @Override
-  protected UserDetailsService userDetailsService() {
-    final UserDetails userDetails = User.withUsername("user")
-        .password("user")
-        .roles("USER")
-        .build();
+  @Autowired @SneakyThrows
+  public void configureGlobal(final AuthenticationManagerBuilder auth) {
+    auth
+        .userDetailsService(userService)
+        .passwordEncoder(passwordEncoder());
+  }
 
-    return new InMemoryUserDetailsManager(userDetails);
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
   }
 
 }
