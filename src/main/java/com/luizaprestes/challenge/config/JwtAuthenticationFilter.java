@@ -28,31 +28,31 @@ public final class JwtAuthenticationFilter extends OncePerRequestFilter {
   @SneakyThrows
   protected void doFilterInternal(final HttpServletRequest request,
       final HttpServletResponse response, final FilterChain chain) {
-    final String requestHeader = request.getHeader("Authorization");
+    final var requestHeader = request.getHeader("Authorization");
 
     if (requestHeader == null || !requestHeader.startsWith("Bearer ")) {
       chain.doFilter(request, response);
       return;
     }
 
-    final String authenticationToken = requestHeader.substring(7);
-    final String username = tokenUtil.getUsernameFromToken(authenticationToken);
+    final var authenticationToken = requestHeader.substring(7);
+    final var username = tokenUtil.getUsernameFromToken(authenticationToken);
 
     if (SecurityContextHolder.getContext().getAuthentication() != null) {
       chain.doFilter(request, response);
       return;
     }
 
-    final UserDetails userDetails = userService.loadUserByUsername(username);
+    final var userDetails = userService.loadUserByUsername(username);
     if (!tokenUtil.validateToken(authenticationToken, userDetails)) {
       chain.doFilter(request, response);
       return;
     }
 
-    final UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+    final var token = new UsernamePasswordAuthenticationToken(
         userDetails, null, userDetails.getAuthorities());
 
-    final WebAuthenticationDetails details = new WebAuthenticationDetailsSource().buildDetails(request);
+    final var details = new WebAuthenticationDetailsSource().buildDetails(request);
     token.setDetails(details);
 
     SecurityContextHolder.getContext()

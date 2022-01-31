@@ -35,7 +35,6 @@ public class SecurityAdapter extends WebSecurityConfigurerAdapter {
   @SneakyThrows
   protected void configure(final HttpSecurity security) {
     security
-        .csrf().disable()
         .authorizeRequests()
           .antMatchers("/", "/authenticate", "/home").permitAll()
           .antMatchers("/v1/").authenticated()

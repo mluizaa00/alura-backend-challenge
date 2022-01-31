@@ -9,13 +9,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin
 @RestController
 public final class JwtAuthenticationController {
 
@@ -28,14 +25,15 @@ public final class JwtAuthenticationController {
   @Autowired
   private UserDetailsService userService;
 
-  @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-  public ResponseEntity<?> createAuthenticationToken(final @RequestBody AuthenticationRequest request) {
-    manager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+  @PostMapping(value = "/authenticate")
+  public ResponseEntity<AuthenticationResponse> createAuthenticationToken(final @RequestBody AuthenticationRequest request) {
+    final var authenticationToken = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
+    manager.authenticate(authenticationToken);
 
-    final UserDetails userDetails = userService
+    final var userDetails = userService
         .loadUserByUsername(request.getUsername());
 
-    final String token = jwtTokenUtil.generateToken(userDetails);
+    final var token = jwtTokenUtil.generateToken(userDetails);
     return ResponseEntity
         .ok(new AuthenticationResponse(token));
   }

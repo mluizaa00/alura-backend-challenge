@@ -12,10 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -27,24 +29,26 @@ public final class IncomeController {
   private IncomeRepository repository;
 
   @ResponseStatus(HttpStatus.CREATED)
-  @RequestMapping(value = "/v1/receitas", method = RequestMethod.GET, produces = "application/json")
+  @GetMapping(value = "/v1/receitas", produces = "application/json")
   public ResponseEntity<List<Income>> getAll() {
     return ResponseEntity.status(HttpStatus.OK)
         .body(repository.findAll());
   }
 
-  @RequestMapping(value = "/v1/receitas/?descricao={description}", method = RequestMethod.GET, produces = "application/json")
+  @GetMapping(value = "/v1/receitas/?descricao={description}", produces = "application/json")
   public ResponseEntity<List<IncomeDto>> getByDescription(@PathVariable final String description) {
-    final List<IncomeDto> incomeList = repository.findIncomesByDescriptionContaining(description).stream()
+    final List<IncomeDto> incomeList = repository.findIncomesByDescriptionContaining(description)
+        .stream()
         .map(Income::toDto)
         .collect(Collectors.toList());
-    
+
     return ResponseEntity.status(HttpStatus.OK)
         .body(incomeList);
   }
 
-  @RequestMapping(value = "/v1/receitas/{year}/{month}", method = RequestMethod.GET, produces = "application/json")
-  public ResponseEntity<List<IncomeDto>> getByDate(@PathVariable final long year, @PathVariable final long month) {
+  @GetMapping(value = "/v1/receitas/{year}/{month}", produces = "application/json")
+  public ResponseEntity<List<IncomeDto>> getByDate(@PathVariable final long year,
+      @PathVariable final long month) {
     final List<IncomeDto> incomeList = repository.findAll().stream()
         .filter(income -> DateUtil.isFromSameDate(income.getDateValue(), year, month))
         .map(Income::toDto)
@@ -54,8 +58,9 @@ public final class IncomeController {
         .body(incomeList);
   }
 
-  @RequestMapping(value = "/v1/receitas", method = RequestMethod.POST, produces = "application/json")
-  public ResponseEntity<Income> save(@Valid @RequestBody final IncomeDto incomeDTO, final BindingResult result) {
+  @PostMapping(value = "/v1/receitas", produces = "application/json")
+  public ResponseEntity<Income> save(@Valid @RequestBody final IncomeDto incomeDTO,
+      final BindingResult result) {
     if (result.hasErrors()) {
       return ResponseEntity
           .badRequest()
@@ -65,7 +70,7 @@ public final class IncomeController {
     final var income = incomeDTO.toIncome(repository.count() + 1);
     repository.save(income);
 
-    final URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+    final var location = ServletUriComponentsBuilder.fromCurrentRequest()
         .path("/{id}")
         .buildAndExpand(income.getId())
         .toUri();
@@ -74,7 +79,7 @@ public final class IncomeController {
         .body(income);
   }
 
-  @RequestMapping(value = "/v1/receitas/{id}", method = RequestMethod.GET, produces = "application/json")
+  @GetMapping(value = "/v1/receitas/{id}", produces = "application/json")
   public ResponseEntity<IncomeDto> get(@PathVariable final long id) {
     final var income = repository.findById(id)
         .orElse(null);
@@ -89,8 +94,9 @@ public final class IncomeController {
         .body(income.toDto());
   }
 
-  @RequestMapping(value = "/v1/receitas/{id}", method = RequestMethod.PUT, produces = "application/json")
-  public ResponseEntity<Income> save(@PathVariable final long id, @Valid final IncomeDto incomeDTO, final BindingResult result) {
+  @PutMapping(value = "/v1/receitas/{id}", produces = "application/json")
+  public ResponseEntity<Income> save(@PathVariable final long id, @Valid final IncomeDto incomeDTO,
+      final BindingResult result) {
     if (result.hasErrors()) {
       return ResponseEntity
           .badRequest()
@@ -105,7 +111,7 @@ public final class IncomeController {
   }
 
   @ResponseStatus(value = HttpStatus.NO_CONTENT)
-  @RequestMapping(value = "/v1/receitas/{id}", method = RequestMethod.DELETE, produces = "application/json")
+  @DeleteMapping(value = "/v1/receitas/{id}", produces = "application/json")
   public void delete(@PathVariable final long id) {
     repository.deleteById(id);
   }

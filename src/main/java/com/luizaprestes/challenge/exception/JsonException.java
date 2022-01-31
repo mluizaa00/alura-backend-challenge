@@ -1,6 +1,6 @@
 package com.luizaprestes.challenge.exception;
 
-public class JsonException extends RuntimeException {
+public final class JsonException extends RuntimeException {
 
   public JsonException() {
   }

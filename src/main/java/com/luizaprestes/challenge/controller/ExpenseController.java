@@ -12,7 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,7 +31,7 @@ public final class ExpenseController {
   private ExpenseRepository repository;
 
   @ResponseStatus(HttpStatus.CREATED)
-  @RequestMapping(value = "/v1/despesas", method = RequestMethod.GET, produces = "application/json")
+  @GetMapping(value = "/v1/despesas", produces = "application/json")
   public ResponseEntity<List<ExpenseDto>> getAll() {
     final List<ExpenseDto> expenseList = repository.findAll().stream()
         .map(Expense::toDto)
@@ -37,7 +41,7 @@ public final class ExpenseController {
         .body(expenseList);
   }
 
-  @RequestMapping(value = "/v1/despesas/?descricao={description}", method = RequestMethod.GET, produces = "application/json")
+  @GetMapping(value = "/v1/despesas/?descricao={description}", produces = "application/json")
   public ResponseEntity<List<ExpenseDto>> getByDescription(@PathVariable final String description) {
     final List<ExpenseDto> expenseList = repository.findExpensesByDescriptionContaining(description).stream()
         .map(Expense::toDto)
@@ -47,7 +51,7 @@ public final class ExpenseController {
         .body(expenseList);
   }
 
-  @RequestMapping(value = "/v1/despesas/{year}/{month}", method = RequestMethod.GET, produces = "application/json")
+  @GetMapping(value = "/v1/despesas/{year}/{month}", produces = "application/json")
   public ResponseEntity<List<ExpenseDto>> getByDate(@PathVariable final long year, @PathVariable final long month) {
     final List<ExpenseDto> expenseList = repository.findAll().stream()
         .filter(expense -> DateUtil.isFromSameDate(expense.getDateValue(), year, month))
@@ -58,7 +62,7 @@ public final class ExpenseController {
         .body(expenseList);
   }
 
-  @RequestMapping(value = "/v1/despesas", method = RequestMethod.POST, produces = "application/json")
+  @PostMapping(value = "/v1/despesas", produces = "application/json")
   public ResponseEntity<ExpenseDto> save(@Valid @RequestBody final ExpenseDto expenseDto, final BindingResult result) {
     if (result.hasErrors()) {
       return ResponseEntity
@@ -69,7 +73,7 @@ public final class ExpenseController {
     final var expense = expenseDto.toExpense(repository.count() + 1);
     repository.save(expense);
 
-    final URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+    final var location = ServletUriComponentsBuilder.fromCurrentRequest()
         .path("/{id}")
         .buildAndExpand(expense.getId())
         .toUri();
@@ -78,7 +82,7 @@ public final class ExpenseController {
         .body(expenseDto);
   }
 
-  @RequestMapping(value = "/v1/despesas/{expense_id}", method = RequestMethod.GET, produces = "application/json")
+  @GetMapping(value = "/v1/despesas/{expense_id}", produces = "application/json")
   public ResponseEntity<ExpenseDto> get(@PathVariable final long expense_id) {
     final var expense = repository.findById(expense_id)
         .orElse(null);
@@ -93,7 +97,7 @@ public final class ExpenseController {
         .body(expense.toDto());
   }
 
-  @RequestMapping(value = "/v1/despesas/{expense_id}", method = RequestMethod.PUT, produces = "application/json")
+  @PutMapping(value = "/v1/despesas/{expense_id}", produces = "application/json")
   public ResponseEntity<ExpenseDto> save(@PathVariable final long expense_id, @Valid final ExpenseDto expenseDto, final BindingResult result) {
     if (result.hasErrors()) {
       return ResponseEntity
@@ -109,7 +113,7 @@ public final class ExpenseController {
   }
 
   @ResponseStatus(value = HttpStatus.NO_CONTENT)
-  @RequestMapping(value = "/v1/despesas/{expense_id}", method = RequestMethod.DELETE, produces = "application/json")
+  @DeleteMapping(value = "/v1/despesas/{expense_id}", produces = "application/json")
   public void delete(@PathVariable final long expense_id) {
     repository.deleteById(expense_id);
   }

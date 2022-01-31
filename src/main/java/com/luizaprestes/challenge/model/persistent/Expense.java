@@ -2,7 +2,6 @@ package com.luizaprestes.challenge.model.persistent;
 
 import com.luizaprestes.challenge.model.dto.ExpenseDto;
 import com.luizaprestes.challenge.model.type.ExpenseType;
-import com.luizaprestes.challenge.util.DateUtil;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;

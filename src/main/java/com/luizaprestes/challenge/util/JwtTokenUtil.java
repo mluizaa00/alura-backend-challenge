@@ -36,8 +36,7 @@ public final class JwtTokenUtil implements Serializable {
   }
 
   private <T> T getClaimFromToken(final String token, final Function<Claims, T> claimsResolver) {
-    final Claims claims = getAllClaimsFromToken(token);
-    return claimsResolver.apply(claims);
+    return claimsResolver.apply(getAllClaimsFromToken(token));
   }
 
   private Claims getAllClaimsFromToken(final String token) {
@@ -48,13 +47,12 @@ public final class JwtTokenUtil implements Serializable {
   }
 
   private Boolean isTokenExpired(final String token) {
-    final Date expiration = getExpirationDateFromToken(token);
+    final var expiration = getExpirationDateFromToken(token);
     return expiration.before(new Date());
   }
 
   public String generateToken(final UserDetails userDetails) {
-    final Map<String, Object> claims = new HashMap<>();
-    return doGenerateToken(claims, userDetails.getUsername());
+    return doGenerateToken(new HashMap<>(), userDetails.getUsername());
   }
 
   private String doGenerateToken(final Map<String, Object> claims, final String subject) {
@@ -63,11 +61,12 @@ public final class JwtTokenUtil implements Serializable {
         .setSubject(subject)
         .setIssuedAt(new Date(System.currentTimeMillis()))
         .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
-        .signWith(SignatureAlgorithm.HS512, secret).compact();
+        .signWith(SignatureAlgorithm.HS512, secret)
+        .compact();
   }
 
   public Boolean validateToken(final String token, final UserDetails userDetails) {
-    final String username = getUsernameFromToken(token);
+    final var username = getUsernameFromToken(token);
     return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
   }
 
