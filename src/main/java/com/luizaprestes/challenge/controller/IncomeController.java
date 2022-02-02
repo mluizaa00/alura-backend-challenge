@@ -17,12 +17,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
+@RequestMapping("/v1/receitas")
 public final class IncomeController {
 
   @Autowired
@@ -30,14 +32,14 @@ public final class IncomeController {
 
   @ResponseBody
   @ResponseStatus(HttpStatus.CREATED)
-  @GetMapping(value = "/v1/receitas", produces = "application/json")
+  @GetMapping
   public ResponseEntity<List<Income>> getAll() {
     return ResponseEntity.status(HttpStatus.OK)
         .body(repository.findAll());
   }
 
   @ResponseBody
-  @GetMapping(value = "/v1/receitas/?descricao={description}", produces = "application/json")
+  @GetMapping(value = "/descricao={description}", produces = "application/json")
   public ResponseEntity<List<IncomeDto>> getByDescription(@PathVariable final String description) {
     final List<IncomeDto> incomeList = repository.findIncomesByDescriptionContaining(description)
         .stream()
@@ -49,7 +51,7 @@ public final class IncomeController {
   }
 
   @ResponseBody
-  @GetMapping(value = "/v1/receitas/{year}/{month}", produces = "application/json")
+  @GetMapping(value = "/{year}/{month}", produces = "application/json")
   public ResponseEntity<List<IncomeDto>> getByDate(@PathVariable final long year,
       @PathVariable final long month) {
     final List<IncomeDto> incomeList = repository.findAll().stream()
@@ -61,7 +63,7 @@ public final class IncomeController {
         .body(incomeList);
   }
 
-  @PostMapping(value = "/v1/receitas", produces = "application/json")
+  @PostMapping
   public ResponseEntity<Income> save(@Valid @RequestBody final IncomeDto incomeDTO,
       final BindingResult result) {
     if (result.hasErrors()) {
@@ -83,7 +85,7 @@ public final class IncomeController {
   }
 
   @ResponseBody
-  @GetMapping(value = "/v1/receitas/{id}", produces = "application/json")
+  @GetMapping(value = "/{id}", produces = "application/json")
   public ResponseEntity<IncomeDto> get(@PathVariable final long id) {
     final var income = repository.findById(id)
         .orElse(null);
@@ -98,7 +100,7 @@ public final class IncomeController {
         .body(income.toDto());
   }
 
-  @PutMapping(value = "/v1/receitas/{id}", produces = "application/json")
+  @PutMapping(value = "/{id}", produces = "application/json")
   public ResponseEntity<Income> save(@PathVariable final long id, @Valid final IncomeDto incomeDTO,
       final BindingResult result) {
     if (result.hasErrors()) {
@@ -115,7 +117,7 @@ public final class IncomeController {
   }
 
   @ResponseStatus(value = HttpStatus.NO_CONTENT)
-  @DeleteMapping(value = "/v1/receitas/{id}", produces = "application/json")
+  @DeleteMapping(value = "/{id}", produces = "application/json")
   public void delete(@PathVariable final long id) {
     repository.deleteById(id);
   }

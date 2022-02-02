@@ -17,12 +17,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
+@RequestMapping("/v1/despesas")
 public final class ExpenseController {
 
   @Autowired
@@ -41,8 +43,8 @@ public final class ExpenseController {
   }
 
   @ResponseBody
-  @GetMapping(value = "/v1/despesas/?descricao={description}", produces = "application/json")
-  public ResponseEntity<List<ExpenseDto>> getByDescription(@PathVariable final String description) {
+  @GetMapping(value = "/descricao={description}", produces = "application/json")
+  public ResponseEntity<List<ExpenseDto>> getByDescription(final String description) {
     final List<ExpenseDto> expenseList = repository.findExpensesByDescriptionContaining(description).stream()
         .map(Expense::toDto)
         .collect(Collectors.toList());
@@ -52,7 +54,7 @@ public final class ExpenseController {
   }
 
   @ResponseBody
-  @GetMapping(value = "/v1/despesas/{year}/{month}", produces = "application/json")
+  @GetMapping(value = "/{year}/{month}", produces = "application/json")
   public ResponseEntity<List<ExpenseDto>> getByDate(@PathVariable final long year, @PathVariable final long month) {
     final List<ExpenseDto> expenseList = repository.findAll().stream()
         .filter(expense -> DateUtil.isFromSameDate(expense.getDateValue(), year, month))
@@ -63,7 +65,7 @@ public final class ExpenseController {
         .body(expenseList);
   }
 
-  @PostMapping(value = "/v1/despesas", produces = "application/json")
+  @PostMapping
   public ResponseEntity<ExpenseDto> save(@Valid @RequestBody final ExpenseDto expenseDto, final BindingResult result) {
     if (result.hasErrors()) {
       return ResponseEntity
@@ -84,7 +86,7 @@ public final class ExpenseController {
   }
 
   @ResponseBody
-  @GetMapping(value = "/v1/despesas/{expense_id}", produces = "application/json")
+  @GetMapping(value = "/{expense_id}", produces = "application/json")
   public ResponseEntity<ExpenseDto> get(@PathVariable final long expense_id) {
     final var expense = repository.findById(expense_id)
         .orElse(null);
@@ -99,7 +101,7 @@ public final class ExpenseController {
         .body(expense.toDto());
   }
 
-  @PutMapping(value = "/v1/despesas/{expense_id}", produces = "application/json")
+  @PutMapping(value = "/{expense_id}", produces = "application/json")
   public ResponseEntity<ExpenseDto> save(@PathVariable final long expense_id, @Valid final ExpenseDto expenseDto, final BindingResult result) {
     if (result.hasErrors()) {
       return ResponseEntity
@@ -115,7 +117,7 @@ public final class ExpenseController {
   }
 
   @ResponseStatus(value = HttpStatus.NO_CONTENT)
-  @DeleteMapping(value = "/v1/despesas/{expense_id}", produces = "application/json")
+  @DeleteMapping(value = "/{expense_id}", produces = "application/json")
   public void delete(@PathVariable final long expense_id) {
     repository.deleteById(expense_id);
   }
