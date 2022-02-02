@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,6 +28,7 @@ public final class ResumeController {
   @Autowired
   private IncomeRepository incomeRepository;
 
+  @ResponseBody
   @GetMapping("/{year}/{month}")
   public String getMonthlyResumeByDate(@PathVariable final long year, @PathVariable final long month) {
     final List<Expense> expenseList = expenseRepository.findAll().stream()

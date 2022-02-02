@@ -2,6 +2,7 @@ package com.luizaprestes.challenge.adapter;
 
 import com.luizaprestes.challenge.config.JwtAuthenticationFilter;
 import com.luizaprestes.challenge.config.JwtEntryPoint;
+import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,9 +13,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -23,10 +27,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityAdapter extends WebSecurityConfigurerAdapter {
 
   @Autowired
-  private JwtEntryPoint entryPoint;
+  private DataSource dataSource;
 
   @Autowired
-  private UserDetailsService userService;
+  private JwtEntryPoint entryPoint;
 
   @Autowired
   private JwtAuthenticationFilter filter;
@@ -55,10 +59,10 @@ public class SecurityAdapter extends WebSecurityConfigurerAdapter {
   @Autowired @SneakyThrows
   public void configureGlobal(final AuthenticationManagerBuilder auth) {
     auth
-        .userDetailsService(userService)
+        .jdbcAuthentication()
+        .dataSource(dataSource)
         .passwordEncoder(passwordEncoder());
   }
-
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();

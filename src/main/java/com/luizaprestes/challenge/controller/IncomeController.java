@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -27,6 +28,7 @@ public final class IncomeController {
   @Autowired
   private IncomeRepository repository;
 
+  @ResponseBody
   @ResponseStatus(HttpStatus.CREATED)
   @GetMapping(value = "/v1/receitas", produces = "application/json")
   public ResponseEntity<List<Income>> getAll() {
@@ -34,6 +36,7 @@ public final class IncomeController {
         .body(repository.findAll());
   }
 
+  @ResponseBody
   @GetMapping(value = "/v1/receitas/?descricao={description}", produces = "application/json")
   public ResponseEntity<List<IncomeDto>> getByDescription(@PathVariable final String description) {
     final List<IncomeDto> incomeList = repository.findIncomesByDescriptionContaining(description)
@@ -45,6 +48,7 @@ public final class IncomeController {
         .body(incomeList);
   }
 
+  @ResponseBody
   @GetMapping(value = "/v1/receitas/{year}/{month}", produces = "application/json")
   public ResponseEntity<List<IncomeDto>> getByDate(@PathVariable final long year,
       @PathVariable final long month) {
@@ -78,6 +82,7 @@ public final class IncomeController {
         .body(income);
   }
 
+  @ResponseBody
   @GetMapping(value = "/v1/receitas/{id}", produces = "application/json")
   public ResponseEntity<IncomeDto> get(@PathVariable final long id) {
     final var income = repository.findById(id)

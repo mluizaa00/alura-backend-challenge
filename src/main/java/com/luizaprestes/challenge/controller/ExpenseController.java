@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -27,6 +28,7 @@ public final class ExpenseController {
   @Autowired
   private ExpenseRepository repository;
 
+  @ResponseBody
   @ResponseStatus(HttpStatus.CREATED)
   @GetMapping(value = "/v1/despesas", produces = "application/json")
   public ResponseEntity<List<ExpenseDto>> getAll() {
@@ -38,6 +40,7 @@ public final class ExpenseController {
         .body(expenseList);
   }
 
+  @ResponseBody
   @GetMapping(value = "/v1/despesas/?descricao={description}", produces = "application/json")
   public ResponseEntity<List<ExpenseDto>> getByDescription(@PathVariable final String description) {
     final List<ExpenseDto> expenseList = repository.findExpensesByDescriptionContaining(description).stream()
@@ -48,6 +51,7 @@ public final class ExpenseController {
         .body(expenseList);
   }
 
+  @ResponseBody
   @GetMapping(value = "/v1/despesas/{year}/{month}", produces = "application/json")
   public ResponseEntity<List<ExpenseDto>> getByDate(@PathVariable final long year, @PathVariable final long month) {
     final List<ExpenseDto> expenseList = repository.findAll().stream()
@@ -79,6 +83,7 @@ public final class ExpenseController {
         .body(expenseDto);
   }
 
+  @ResponseBody
   @GetMapping(value = "/v1/despesas/{expense_id}", produces = "application/json")
   public ResponseEntity<ExpenseDto> get(@PathVariable final long expense_id) {
     final var expense = repository.findById(expense_id)
