@@ -86,40 +86,33 @@ public final class ExpenseController {
   }
 
   @ResponseBody
-  @GetMapping(value = "/{expense_id}", produces = "application/json")
-  public ResponseEntity<ExpenseDto> get(@PathVariable final long expense_id) {
-    final var expense = repository.findById(expense_id)
-        .orElse(null);
-
-    if (expense == null) {
-      return ResponseEntity
-          .badRequest()
-          .build();
-    }
-
-    return ResponseEntity.status(HttpStatus.OK)
-        .body(expense.toDto());
+  @GetMapping(value = "/{id}", produces = "application/json")
+  public ResponseEntity<ExpenseDto> get(@PathVariable final long id) {
+    final var expense = repository.findById(id);
+    return expense.map(value -> ResponseEntity.ok(value.toDto()))
+        .orElseGet(() -> ResponseEntity
+          .notFound()
+          .build());
   }
 
-  @PutMapping(value = "/{expense_id}", produces = "application/json")
-  public ResponseEntity<ExpenseDto> save(@PathVariable final long expense_id, @Valid final ExpenseDto expenseDto, final BindingResult result) {
+  @PutMapping(value = "/{id}", produces = "application/json")
+  public ResponseEntity<ExpenseDto> save(@PathVariable final long id, @Valid final ExpenseDto expenseDto, final BindingResult result) {
     if (result.hasErrors()) {
       return ResponseEntity
           .badRequest()
           .build();
     }
 
-    final var expense = expenseDto.toExpense(expense_id);
+    final var expense = expenseDto.toExpense(id);
     repository.save(expense);
 
-    return ResponseEntity.status(HttpStatus.OK)
-        .body(expense.toDto());
+    return ResponseEntity.ok(expense.toDto());
   }
 
   @ResponseStatus(value = HttpStatus.NO_CONTENT)
-  @DeleteMapping(value = "/{expense_id}", produces = "application/json")
-  public void delete(@PathVariable final long expense_id) {
-    repository.deleteById(expense_id);
+  @DeleteMapping(value = "/{id}", produces = "application/json")
+  public void delete(@PathVariable final long id) {
+    repository.deleteById(id);
   }
 
 }

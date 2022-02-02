@@ -33,9 +33,12 @@ public final class IncomeController {
   @ResponseBody
   @ResponseStatus(HttpStatus.CREATED)
   @GetMapping
-  public ResponseEntity<List<Income>> getAll() {
-    return ResponseEntity.status(HttpStatus.OK)
-        .body(repository.findAll());
+  public ResponseEntity<List<IncomeDto>> getAll() {
+    final List<IncomeDto> incomeList = repository.findAll().stream()
+        .map(Income::toDto)
+        .collect(Collectors.toList());
+
+    return ResponseEntity.ok(incomeList);
   }
 
   @ResponseBody
@@ -64,7 +67,7 @@ public final class IncomeController {
   }
 
   @PostMapping
-  public ResponseEntity<Income> save(@Valid @RequestBody final IncomeDto incomeDTO,
+  public ResponseEntity<IncomeDto> save(@Valid @RequestBody final IncomeDto incomeDTO,
       final BindingResult result) {
     if (result.hasErrors()) {
       return ResponseEntity
@@ -81,23 +84,17 @@ public final class IncomeController {
         .toUri();
 
     return ResponseEntity.created(location)
-        .body(income);
+        .body(income.toDto());
   }
 
   @ResponseBody
   @GetMapping(value = "/{id}", produces = "application/json")
   public ResponseEntity<IncomeDto> get(@PathVariable final long id) {
-    final var income = repository.findById(id)
-        .orElse(null);
-
-    if (income == null) {
-      return ResponseEntity
-          .badRequest()
-          .build();
-    }
-
-    return ResponseEntity.status(HttpStatus.OK)
-        .body(income.toDto());
+    final var income = repository.findById(id);
+    return income.map(value -> ResponseEntity.ok(value.toDto()))
+        .orElseGet(() -> ResponseEntity
+          .notFound()
+          .build());
   }
 
   @PutMapping(value = "/{id}", produces = "application/json")
