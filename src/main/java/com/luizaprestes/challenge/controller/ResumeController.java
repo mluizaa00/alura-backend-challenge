@@ -12,6 +12,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +31,7 @@ public final class ResumeController {
 
   @ResponseBody
   @GetMapping("/{year}/{month}")
-  public String getMonthlyResumeByDate(@PathVariable final long year, @PathVariable final long month) {
+  public ResponseEntity<MonthlyResume> getMonthlyResumeByDate(@PathVariable final long year, @PathVariable final long month) {
     final List<Expense> expenseList = expenseRepository.findAll().stream()
         .filter(expense -> DateUtil.isFromSameDate(expense.getDateValue(), year, month))
         .collect(Collectors.toList());
@@ -61,7 +62,7 @@ public final class ResumeController {
         .expensesByType(expenseTypeMap)
         .build();
 
-    return JacksonAdapter.getInstance().serialize(resume);
+    return ResponseEntity.ok(resume);
   }
 
 }

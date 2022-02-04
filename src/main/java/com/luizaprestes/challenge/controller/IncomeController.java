@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,9 +42,9 @@ public final class IncomeController {
     return ResponseEntity.ok(incomeList);
   }
 
+  @GetMapping
   @ResponseBody
-  @GetMapping(value = "/descricao={description}", produces = "application/json")
-  public ResponseEntity<List<IncomeDto>> getByDescription(@PathVariable final String description) {
+  public ResponseEntity<List<IncomeDto>> getByDescription(@RequestParam final String description) {
     final List<IncomeDto> incomeList = repository.findIncomesByDescriptionContaining(description)
         .stream()
         .map(Income::toDto)

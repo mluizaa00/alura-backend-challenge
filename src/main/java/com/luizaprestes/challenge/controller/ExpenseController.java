@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,9 +47,9 @@ public final class ExpenseController {
         .body(expenseList);
   }
 
+  @GetMapping
   @ResponseBody
-  @GetMapping(value = "/descricao={description}", produces = "application/json")
-  public ResponseEntity<List<ExpenseDto>> getByDescription(final String description) {
+  public ResponseEntity<List<ExpenseDto>> getByDescription(@RequestParam final String description) {
     final List<ExpenseDto> expenseList = repository.findExpensesByDescriptionContaining(description).stream()
         .map(Expense::toDto)
         .collect(Collectors.toList());
@@ -60,6 +65,16 @@ public final class ExpenseController {
         .filter(expense -> DateUtil.isFromSameDate(expense.getDateValue(), year, month))
         .map(Expense::toDto)
         .collect(Collectors.toList());
+
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(expenseList);
+  }
+
+  @GetMapping
+  public ResponseEntity<Page<ExpenseDto>> getPaginated(@RequestParam final int page, @RequestParam final int amount, @RequestParam final String ordenator) {
+    final Pageable paginator = PageRequest.of(page, amount, Direction.ASC, ordenator);
+    final Page<ExpenseDto> expenseList = repository.findAll(paginator)
+        .map(Expense::toDto);
 
     return ResponseEntity.status(HttpStatus.OK)
         .body(expenseList);
