@@ -8,10 +8,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -30,11 +33,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/v1/despesas")
-public final class ExpenseController {
+public class ExpenseController {
 
   @Autowired
   private ExpenseRepository repository;
 
+  @Cacheable("despesas_all")
   @ResponseBody
   @ResponseStatus(HttpStatus.CREATED)
   @GetMapping(value = "/v1/despesas", produces = "application/json")
@@ -71,8 +75,7 @@ public final class ExpenseController {
   }
 
   @GetMapping
-  public ResponseEntity<Page<ExpenseDto>> getPaginated(@RequestParam final int page, @RequestParam final int amount, @RequestParam final String ordenator) {
-    final Pageable paginator = PageRequest.of(page, amount, Direction.ASC, ordenator);
+  public ResponseEntity<Page<ExpenseDto>> getPaginated(@RequestParam @PageableDefault(sort = "id", direction = Direction.DESC) final Pageable paginator) {
     final Page<ExpenseDto> expenseList = repository.findAll(paginator)
         .map(Expense::toDto);
 
@@ -81,6 +84,7 @@ public final class ExpenseController {
   }
 
   @PostMapping
+  @CacheEvict(value = "despesas_all", allEntries = true)
   public ResponseEntity<ExpenseDto> save(@Valid @RequestBody final ExpenseDto expenseDto, final BindingResult result) {
     if (result.hasErrors()) {
       return ResponseEntity
@@ -110,6 +114,7 @@ public final class ExpenseController {
           .build());
   }
 
+  @CacheEvict(value = "despesas_all", allEntries = true)
   @PutMapping(value = "/{id}", produces = "application/json")
   public ResponseEntity<ExpenseDto> save(@PathVariable final long id, @Valid final ExpenseDto expenseDto, final BindingResult result) {
     if (result.hasErrors()) {
@@ -124,6 +129,7 @@ public final class ExpenseController {
     return ResponseEntity.ok(expense.toDto());
   }
 
+  @CacheEvict(value = "despesas_all", allEntries = true)
   @ResponseStatus(value = HttpStatus.NO_CONTENT)
   @DeleteMapping(value = "/{id}", produces = "application/json")
   public void delete(@PathVariable final long id) {

@@ -23,7 +23,10 @@ dependencies {
 
     implementation "${springBoot}-starter-web:${springVersion}"
     implementation "${springBoot}-starter-thymeleaf:${springVersion}"
+
     implementation "${springBoot}-starter-data-jpa:${springVersion}"
+    implementation "${springBoot}-starter-cache:${springVersion}"
+
     implementation "${springBoot}-starter-validation:${springVersion}"
     implementation "${springBoot}-starter-security:${springVersion}"
 

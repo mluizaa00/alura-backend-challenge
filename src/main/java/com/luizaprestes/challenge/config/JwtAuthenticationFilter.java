@@ -1,9 +1,10 @@
 package com.luizaprestes.challenge.config;
 
-import com.luizaprestes.challenge.util.JwtTokenUtil;
+import com.luizaprestes.challenge.service.JwtTokenService;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,14 +15,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
+@RequiredArgsConstructor
 public final class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   @Autowired
   private UserDetailsService userService;
 
-  @Autowired
-  private JwtTokenUtil tokenUtil;
-
+  private final JwtTokenService tokenUtil;
   @Override
   @SneakyThrows
   protected void doFilterInternal(final HttpServletRequest request,
@@ -29,9 +29,9 @@ public final class JwtAuthenticationFilter extends OncePerRequestFilter {
     final var requestHeader = request.getHeader("Authorization");
 
     if (requestHeader == null || !requestHeader.startsWith("Bearer ")) {
-      chain.doFilter(request, response);
       return;
     }
+
 
     final var authenticationToken = requestHeader.substring(7);
     final var username = tokenUtil.getUsernameFromToken(authenticationToken);

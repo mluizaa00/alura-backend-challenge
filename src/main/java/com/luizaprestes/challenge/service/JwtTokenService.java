@@ -1,4 +1,4 @@
-package com.luizaprestes.challenge.util;
+package com.luizaprestes.challenge.service;
 
 import java.io.Serializable;
 
@@ -14,7 +14,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
-public final class JwtTokenUtil implements Serializable {
+public final class JwtTokenService implements Serializable {
 
   private static final long serialVersionUID;
   public static final long JWT_TOKEN_VALIDITY;
@@ -59,6 +59,7 @@ public final class JwtTokenUtil implements Serializable {
     return Jwts.builder()
         .setClaims(claims)
         .setSubject(subject)
+        .setIssuer("Alura Backend Challenge")
         .setIssuedAt(new Date(System.currentTimeMillis()))
         .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
         .signWith(SignatureAlgorithm.HS512, secret)
