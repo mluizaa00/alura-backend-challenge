@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '2.6.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id "org.sonarqube" version "3.3"
+    id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 
 group = 'com.luizaprestes'
@@ -45,6 +46,11 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+shadowJar {
+    archiveFileName.set("app.jar")
+    destinationDirectory.set(file("$rootDir/target/"))
 }
 
 configurations {
